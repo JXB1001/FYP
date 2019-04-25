@@ -1,0 +1,260 @@
+<head>
+
+</head>
+
+<body>
+	<script src='p5.min.js'></script>
+	<script src='jsData.js'></script>
+	
+	<script>
+		
+		var c = {x:window.innerWidth*0.9, y:window.innerHeight*0.9};
+		var margin = 100;
+		var axes = 80;
+		var limit = 50;
+		var data = ed;
+		var position;
+		var xInc;
+		var botPath = []
+		lengthOfData = lengthOfData;
+		var dataUsed
+		var count;
+		
+		function setup(){
+			createCanvas(c.x, c.y);
+			frameRate(10);
+			fill(0, 0, 0);
+			position = 0;
+			xposition = 0 + margin;
+			count = 0;
+			xInc = (c.x-margin*2)/lengthOfData;
+
+			var i;
+			for(i = 0; i < numOfBots; i++)
+				botPath.push([]);
+			dataUsed = 1;
+			background(250);
+			getData();
+		}
+		
+		function getData(){
+			var p;
+			var lane;
+			var xp
+			data.forEach(function(d){
+				p = d['position']
+				lane = d['lane']
+				p = 1-(p+limit)/(limit*2);
+				p = (p*(c.y-(margin*2)))+margin;
+				xp = xInc*(d['frame']/(100)) + margin;
+				botPath[d['number']].push(new DataPoint(xp, p, lane))
+			});
+
+			// while(count <= lengthOfData)
+			// {
+			// 	var i;
+			// 	for(i = position; i < (position+numOfBots); i++){
+			// 		if(i < data.length){
+			// 			p = data[i]['position'];
+			// 			lane = data[i]['lane'];
+			// 			p = 1-(p+limit)/(limit*2);
+			// 			p = (p*(c.y-(margin*2)))+margin;
+			// 			botPath[data[i]['number']].push(new DataPoint(xInc*(), p, lane))	
+			// 		}
+			// 	}
+
+			// 	position+=numOfBots;
+			// 	xposition+=xInc;
+			// 	count++;
+			// }
+		}
+		
+		function drawAxes()
+		{
+			textAlign(LEFT);
+			strokeWeight(3);
+			stroke(20);
+			line(axes, axes, axes, c.y-axes)
+			line(axes, c.y-axes, c.x-axes, c.y-axes)
+
+			strokeWeight(0);
+			fill(20);
+			textSize(20);
+			text("Frame", c.x/2, c.y-(axes/5));
+			text("Position", axes/2, axes/2);
+		}
+
+		function draw()
+		{
+			var carPosition = 4;
+			var count = 0;
+			botPath.forEach(function(l){
+				var previous = l[0].y;
+				var previousx = l[0].x;
+				var previousLane = -1;
+
+				noFill();
+				beginShape();
+				strokeWeight(4);
+				curveVertex(l[0].x, l[0].y);
+
+				var count3 = 0;
+				var resolution = 5;
+				stroke(80);
+				strokeWeight(3);
+				if(count == carPosition)
+				{
+						l.forEach(function(dp){
+						
+						if(count3%resolution == 0){
+							strokeWeight(3);
+							stroke(220);
+							line(dp.x, dp.y, dp.x, c.y-axes);
+							stroke(20)
+							line(dp.x, c.y-axes, dp.x, c.y-axes+10);
+							strokeWeight(1)
+							textAlign(CENTER)
+							text(count3*100, dp.x, c.y-axes+25)
+						}
+						count3++;
+					});	
+				}
+
+				strokeWeight(7);
+				if(count == carPosition)
+				{
+					l.forEach(function(dp){
+						
+						if((Math.abs(dp.y-previous) > c.y*0.5))
+						{
+							curveVertex(previousx, previous);
+							endShape();
+							beginShape();
+							curveVertex(dp.x, dp.y);
+						}
+						else if(previousLane != dp.lane)
+						{
+							curveVertex(previousx, previous);
+							endShape();
+							beginShape();
+							curveVertex(previousx, previous);
+							curveVertex(previousx, previous);
+						}
+
+						curveVertex(dp.x, dp.y);
+
+						stroke(0);
+
+						previous = dp.y;
+						previousx = dp.x;
+						previousLane = dp.lane;
+					});
+					//curveVertex(l[l.length-1].x, l[l.length-1].y);
+					curveVertex(previousx, previous);
+					endShape();
+				}
+
+				strokeWeight(3);
+
+				previous = l[0].y;
+				previousx = l[0].x;
+				previousLane = -1;
+				l.forEach(function(dp){
+					
+					if((Math.abs(dp.y-previous) > c.y*0.5))
+					{
+						curveVertex(previousx, previous);
+						endShape();
+						beginShape();
+						curveVertex(dp.x, dp.y);
+					}
+					else if(previousLane != dp.lane)
+					{
+						curveVertex(previousx, previous);
+						endShape();
+						beginShape();
+						curveVertex(previousx, previous);
+						curveVertex(previousx, previous);
+					}
+
+					curveVertex(dp.x, dp.y);
+
+					//if(count == carPosition)
+					if(false)
+						stroke(255, 50, 50);
+					else if(dp.lane == 0)
+						stroke(255, 189, 51);
+					else if(dp.lane == 1)
+						stroke(117, 255, 51);
+					else if(dp.lane == 2)
+						stroke(51, 255, 189);
+					else
+						stroke(51, 255, 189);
+
+					previous = dp.y;
+					previousx = dp.x;
+					previousLane = dp.lane;
+				});
+				curveVertex(l[l.length-1].x, l[l.length-1].y);
+				endShape();
+
+				stroke(0);
+				strokeWeight(0);
+				var count2 = 0
+				l.forEach(function(dp){
+					
+					if(count2 != 0)
+					{
+						//if(count == carPosition)
+						if(false)
+							fill(255, 50, 50);
+						else if(dp.lane == 0)
+							fill(255, 189, 51);
+						else if(dp.lane == 1)
+							fill(117, 255, 51);
+						else if(dp.lane == 2)
+							fill(51, 255, 189);
+						else
+							fill(51, 255, 189);						
+					}
+
+					var ss = 3
+					//if(count == carPosition){
+					if(false){
+						triangle(dp.x-ss, dp.y+ss, dp.x+ss, dp.y+ss, dp.x, dp.y-ss)
+					}
+					else{
+						circle(dp.x, dp.y, ss);
+					}
+					
+					count2++;
+				});
+				count += 1;
+			});
+
+			drawAxes()
+
+			fill(250)
+			strokeWeight(0)
+			rect(c.x-margin+2, 100, margin, 300)
+			noLoop();
+			// if(dataUsed == lengthOfData){
+			// 	dataUsed = 1;
+			// 	background(255);
+			// 	botPath = [];
+			// 	for(i = 0; i < numOfBots; i++)
+			// 		botPath.push([]);
+			// }
+
+		}
+
+		function DataPoint(x, y, lane, bot)
+		{
+			this.x = x;
+			this.y = y;
+			this.lane = lane;
+		}
+		
+		
+	</script>
+</body>

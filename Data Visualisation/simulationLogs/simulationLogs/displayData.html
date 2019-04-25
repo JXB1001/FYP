@@ -1,0 +1,44 @@
+<head>
+
+</head>
+
+<body>
+	<script src='p5.min.js'></script>
+	<script src='jsData.js'></script>
+	
+	<script>
+		
+		var filelocation = "C:/Users/JXB1001/Documents/MEng Project/Simulation/simulationLogs/logs/"
+		var c = {x:800, y:800};
+		var limit = 50;
+		var data = ed;
+		var position;
+		var xInc;
+		
+		function setup(){
+			createCanvas(c.x, c.y);
+			frameRate(30);
+			fill(0, 0, 0);
+			position = 0;
+			count = 0;
+			xInc = c.x/data[1].length;
+		}
+		
+		function draw(){
+			data.forEach(function(dp) {
+				circle(xInc*position, ((-dp[position])/(limit*2)*(c.y)) + (c.y/2), 1);
+			});
+
+			if(position + 1 == data[0].length){
+				position = 0;
+				background
+			}
+			else{
+				position++;
+			}
+
+		}
+		
+		
+	</script>
+</body>
